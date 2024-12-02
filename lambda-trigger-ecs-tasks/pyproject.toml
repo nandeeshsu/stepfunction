@@ -1,0 +1,17 @@
+[project]
+name = "lambda-trigger-ecs-tasks"
+version = "0.0.1"
+description = "A Lambda triggering the AWS ECS Task using the coniguration file in AWS S3 bucket"
+authors = [
+    {name = "Nandeesh Subbegowda"},
+    {email =  "test@gmail.com"}
+]
+requires-python = ">=3.12"
+
+dependencies = [
+    "boto3 >= 1.35.71"  # AWS SDK for Python
+]
+
+lint = [
+    "mypy"
+]

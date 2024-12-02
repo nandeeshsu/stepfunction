@@ -1,0 +1,27 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+venv/
+ENV/
+env/
+
+# macOS files
+.DS_Store
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.swp
+
+# Ignore CSV file used for configuration
+store_ranges.csv
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr

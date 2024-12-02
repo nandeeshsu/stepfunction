@@ -1,0 +1,99 @@
+{
+  "Comment": "Track ECS tasks triggered by Lambda",
+  "StartAt": "Trigger ECS Tasks",
+  "States": {
+    "Trigger ECS Tasks": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:905418472862:function:trigger-ecs-tasks",
+      "Next": "Track ECS Task Status",
+      "Catch": [
+        {
+          "ErrorEquals": [
+            "States.ALL"
+          ],
+          "Next": "Fail"
+        }
+      ]
+    },
+    "Track ECS Task Status": {
+      "Type": "Map",
+      "ItemsPath": "$.task_arns",
+      "MaxConcurrency": 10,
+      "Iterator": {
+        "StartAt": "Check ECS Task",
+        "States": {
+          "Check ECS Task": {
+            "Type": "Task",
+            "Resource": "arn:aws:states:::aws-sdk:ecs:describeTasks",
+            "Parameters": {
+              "Cluster.$": "$.cluster_name",
+              "Tasks.$": "$.task_arn"
+            },
+            "ResultPath": "$.describeTaskResult",
+            "Next": "Evaluate Task Status"
+          },
+          "Evaluate Task Status": {
+            "Type": "Choice",
+            "Choices": [
+              {
+                "And": [
+                  {
+                    "Variable": "$.describeTaskResult.Tasks[0].LastStatus",
+                    "StringEquals": "STOPPED"
+                  },
+                  {
+                    "Variable": "$.describeTaskResult.Tasks[0].Containers[0].ExitCode",
+                    "NumericEquals": 0
+                  }
+                ],
+                "Next": "Success"
+              },
+              {
+                "And": [
+                  {
+                    "Variable": "$.describeTaskResult.Tasks[0].LastStatus",
+                    "StringEquals": "STOPPED"
+                  },
+                  {
+                    "Variable": "$.describeTaskResult.Tasks[0].Containers[0].ExitCode",
+                    "NumericEquals": 1
+                  }
+                ],
+                "Next": "Failure"
+              }
+            ],
+            "Default": "Wait for Task Completion"
+          },
+          "Wait for Task Completion": {
+            "Type": "Wait",
+            "Seconds": 30,
+            "InputPath": "$",
+            "Next": "Check ECS Task"
+          },
+          "Success": {
+            "Type": "Succeed"
+          },
+          "Failure": {
+            "Type": "Fail",
+            "Error": "TaskExecutionFailedWithExitCode1",
+            "Cause": "One or more tasks failed with ExitCode 1"
+          }
+        }
+      },
+      "Next": "Invoke Hello World Lambda"
+    },
+    "Invoke Hello World Lambda": {
+      "Type": "Task",
+      "Resource": "arn:aws:lambda:us-east-1:905418472862:function:hello-world",
+      "Next": "All Tasks Complete"
+    },
+    "All Tasks Complete": {
+      "Type": "Succeed"
+    },
+    "Fail": {
+      "Type": "Fail",
+      "Error": "TaskExecutionFailed",
+      "Cause": "One or more tasks failed to execute."
+    }
+  }
+}
