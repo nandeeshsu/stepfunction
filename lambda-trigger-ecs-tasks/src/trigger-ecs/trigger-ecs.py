@@ -39,14 +39,14 @@ def lambda_handler(event, context):
                     networkConfiguration={
                         'awsvpcConfiguration': {
                             'subnets': [
-                                'subnet-08c5266ee7383588e',
-                                'subnet-078594168b1a5bffe',
-                                'subnet-0c75a69e8d0c50f5d',
-                                'subnet-053cd4aa7cba652c0',
-                                'subnet-05bf635de1b91bc28',
-                                'subnet-01e1eae286254e561'
+                                'subnet-0558f371380a4598b',
+                                'subnet-065bfbb5df00ad729',
+                                'subnet-0d9cc9b3e75ecd370',
+                                'subnet-0baf0c092298572bd',
+                                'subnet-0b643bebaed4722b9',
+                                'subnet-0f383ac97213b453d'
                             ],  # Replace with your subnet IDs
-                            'securityGroups': ['sg-02e017bf9999d5106'],  # Replace with your security group IDs
+                            'securityGroups': ['sg-0c21b2425f6e5f884'],  # Replace with your security group IDs
                             'assignPublicIp': 'ENABLED'  # Or 'DISABLED' based on your use case
                         }
                     },
